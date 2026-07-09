@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "nama": "Kemeja Flanel",
+    "merk": "Levi's",
+    "ukuran": "L",
+    "warna": "Merah",
+    "harga": 250000.0,
+    "stok": 10,
+    "kategori": "Kemeja",
+    "gambar_url": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=500&fit=crop",
+    "deskripsi": "Kemeja flanel bahan katun premium, nyaman dipakai sehari-hari."
+  },
+  {
+    "id": 2,
+    "nama": "Kaos Oblong",
+    "merk": "Uniqlo",
+    "ukuran": "M",
+    "warna": "Putih",
+    "harga": 150000.0,
+    "stok": 25,
+    "kategori": "Kaos",
+    "gambar_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop",
+    "deskripsi": null
+  },
+  {
+    "id": 4,
+    "nama": "Kemeja Batik",
+    "merk": "Erigo",
+    "ukuran": "L",
+    "warna": "Hitam",
+    "harga": 200000.0,
+    "stok": 15,
+    "kategori": "Kemeja",
+    "gambar_url": "https://images.unsplash.com/photo-1604973104381-870c92f10343?w=400&h=500&fit=crop",
+    "deskripsi": null
+  },
+  {
+    "id": 5,
+    "nama": "Hoodie",
+    "merk": "Supreme",
+    "ukuran": "M",
+    "warna": "Abu-abu",
+    "harga": 350000.0,
+    "stok": 8,
+    "kategori": "Jaket",
+    "gambar_url": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop",
+    "deskripsi": "Hoodie limited edition dengan bahan fleece hangat."
+  },
+  {
+    "id": 7,
+    "nama": "Kaos Putih",
+    "merk": "Levi's",
+    "ukuran": "M",
+    "warna": "Kuning",
+    "harga": 400000.0,
+    "stok": 1,
+    "kategori": "Kaos",
+    "gambar_url": null,
+    "deskripsi": "Kaus putih polos"
+  }
+]
