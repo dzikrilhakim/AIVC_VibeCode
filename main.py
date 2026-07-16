@@ -1,5 +1,6 @@
 import json
 import os
+import hashlib
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
@@ -15,7 +16,7 @@ class Baju(BaseModel):
     nama: str
     merk: str
     ukuran: str
-    warna: str
+    warna: Optional[str] = None
     harga: float
     stok: int
     kategori: str
@@ -27,7 +28,6 @@ class BajuCreate(BaseModel):
     nama: str
     merk: str
     ukuran: str
-    warna: str
     harga: float
     stok: int
     kategori: str
@@ -163,5 +163,52 @@ def hapus_baju(baju_id: int):
             return {"message": "Baju berhasil dihapus"}
     raise HTTPException(status_code=404, detail="Baju tidak ditemukan")
 
+
+# ─────────────────────────── Auth ───────────────────────────
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    nama: str
+
+class UserOut(BaseModel):
+    username: str
+    nama: str
+
+ADMIN_USER = {
+    "username": "admin",
+    "password": hashlib.sha256("123".encode()).hexdigest(),
+    "nama": "Admin Fashion",
+}
+
+users_db = []
+
+@app.post("/auth/login", response_model=UserOut)
+def auth_login(payload: UserLogin):
+    if payload.username == ADMIN_USER["username"] and hashlib.sha256(payload.password.encode()).hexdigest() == ADMIN_USER["password"]:
+        return UserOut(username=ADMIN_USER["username"], nama=ADMIN_USER["nama"])
+    for u in users_db:
+        if u["username"] == payload.username and u["password"] == hashlib.sha256(payload.password.encode()).hexdigest():
+            return UserOut(username=u["username"], nama=u.get("nama", payload.username))
+    raise HTTPException(status_code=401, detail="Username atau password salah")
+
+@app.post("/auth/register", response_model=UserOut)
+def auth_register(payload: UserCreate):
+    if payload.username == "admin":
+        raise HTTPException(status_code=400, detail="Username tidak tersedia")
+    for u in users_db:
+        if u["username"] == payload.username:
+            raise HTTPException(status_code=400, detail="Username sudah terdaftar")
+    new_user = {
+        "username": payload.username,
+        "password": hashlib.sha256(payload.password.encode()).hexdigest(),
+        "nama": payload.nama,
+    }
+    users_db.append(new_user)
+    return UserOut(username=new_user["username"], nama=new_user["nama"])
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

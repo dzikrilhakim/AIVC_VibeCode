@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Baju</title>
+    <title>Chipper Fashion Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,7 +21,7 @@
                         'slide-up': { '0%': { transform: 'translateY(40px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
                         'scale-in': { '0%': { transform: 'scale(0.95)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
                         'float': { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-                        'glow': { '0%, 100%': { boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)' }, '50%': { boxShadow: '0 0 40px rgba(34, 197, 94, 0.6)' } },
+                        'glow': { '0%, 100%': { boxShadow: '0 0 20px rgba(236, 72, 153, 0.3)' }, '50%': { boxShadow: '0 0 40px rgba(236, 72, 153, 0.6)' } },
                         'shimmer': { '0%': { backgroundPosition: '-1000px 0' }, '100%': { backgroundPosition: '1000px 0' } }
                     },
                     animation: {
@@ -42,10 +42,12 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>[data-admin].hidden,[data-cart].hidden{display:none!important}.line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.line-clamp-1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}.custom-scrollbar::-webkit-scrollbar{width:4px}.custom-scrollbar::-webkit-scrollbar-track{background:transparent}.custom-scrollbar::-webkit-scrollbar-thumb{background:#fbcfe8;border-radius:4px}</style>
 </head>
-<body class="bg-gradient-to-br from-pink-50 via-red-50/30 to-rose-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+<body class="bg-gradient-to-br from-pink-50 via-white to-rose-50 text-gray-800 font-sans antialiased overflow-x-hidden">
 
     <!-- Navbar -->
     <nav class="fixed top-0 inset-x-0 z-50 bg-gradient-to-r from-white/80 to-pink-50/50 backdrop-blur-2xl border-b border-pink-200 shadow-lg shadow-pink-200/30">
@@ -55,55 +57,77 @@
                     <div class="w-9 h-9 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-pink-300 group-hover:shadow-pink-400 group-hover:scale-110 transition-all">
                         <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
                     </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Fashion Store</span>
+                    <span class="text-xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Chipper</span>
                 </a>
-                <div class="flex items-center gap-2">
-                    <button onclick="openAddForm()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-semibold rounded-xl hover:shadow-lg hover:shadow-pink-400 hover:-translate-y-0.5 transition-all">
+                <div class="flex items-center gap-1 sm:gap-2">
+                    <button data-admin onclick="openAddForm()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-semibold rounded-xl hover:shadow-lg hover:shadow-pink-400 hover:-translate-y-0.5 transition-all">
                         <i class="fa-solid fa-plus"></i> Tambah
                     </button>
-                    <span class="text-sm text-gray-400 hidden sm:block">
+                    <span data-cart class="text-sm text-gray-400 hidden sm:block">
                         <span id="total-items" class="font-semibold text-gray-600">0</span> item
                     </span>
-                    <button onclick="toggleCart()" class="relative p-2 text-gray-400 hover:text-pink-600 transition-colors hover:scale-110">
+                    <button onclick="openLoginForm()" id="login-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-gray-600 text-xs font-semibold rounded-xl border border-gray-200 hover:border-pink-300 hover:text-pink-600 transition-all">
+                        <i class="fa-solid fa-user"></i> Masuk
+                    </button>
+                    <div id="user-avatar" class="hidden relative">
+                        <button onclick="toggleUserMenu()" class="w-8 h-8 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-110 transition-all cursor-pointer" id="user-avatar-btn" title="Akun">
+                            <span id="user-initial">A</span>
+                        </button>
+                        <div id="user-menu" class="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 hidden">
+                            <div class="px-4 py-2 border-b border-gray-100">
+                                <p id="user-menu-name" class="text-sm font-bold text-gray-900">User</p>
+                                <p id="user-menu-username" class="text-xs text-gray-400">@user</p>
+                            </div>
+                            <button onclick="openOrders()" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-pink-50 transition-colors font-medium">
+                                <i class="fa-solid fa-box"></i> Pesanan Saya
+                            </button>
+                            <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors font-medium">
+                                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="toggleCart()" data-cart class="relative p-2 text-gray-400 hover:text-pink-600 transition-colors hover:scale-110">
                         <i class="fa-solid fa-shopping-cart text-lg"></i>
-                        <span id="cart-badge" class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden animate-bounce">0</span>
+                        <span id="cart-badge" class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <header class="relative pt-16 overflow-hidden min-h-[650px] flex items-center">
-        <div class="absolute inset-0 bg-gradient-to-br from-pink-50 via-white to-rose-50/40"></div>
-        <!-- Floating background elements -->
-        <div class="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-bl from-pink-200/50 via-rose-100/30 to-transparent rounded-full blur-3xl -translate-y-1/4 translate-x-1/4 animate-float" style="animation-delay: 0s"></div>
-        <div class="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-gradient-to-tr from-pink-100/40 to-transparent rounded-full blur-3xl animate-float" style="animation-delay: 1s"></div>
-        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-rose-100/25 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 animate-float" style="animation-delay: 2s"></div>
-        <!-- Decorative shapes -->
-        <div class="absolute top-20 right-20 w-24 h-24 border-3 border-pink-200/40 rounded-3xl animate-spin" style="animation-duration: 25s"></div>
-        <div class="absolute bottom-32 left-20 w-40 h-40 border-2 border-rose-200/30 rounded-full animate-pulse"></div>
-        
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&h=900&fit=crop" alt="Fashion" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-pink-900/70 via-pink-700/50 to-rose-800/60"></div>
+        </div>
+        <div class="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-bl from-pink-300/40 via-rose-200/20 to-transparent rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" style="animation: float 3s ease-in-out infinite"></div>
+        <div class="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-gradient-to-tr from-pink-200/30 to-transparent rounded-full blur-3xl" style="animation: float 3s ease-in-out infinite; animation-delay: 1s"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-rose-200/20 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" style="animation: float 3s ease-in-out infinite; animation-delay: 2s"></div>
+        <div class="absolute top-20 right-20 w-24 h-24 border-2 border-pink-200/30 rounded-3xl" style="animation: spin 25s linear infinite"></div>
+        <div class="absolute bottom-32 left-20 w-40 h-40 border border-rose-200/20 rounded-full" style="animation: pulse 3s ease-in-out infinite"></div>
+
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-28 w-full">
             <div class="max-w-3xl">
-                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-pink-100 to-rose-100 text-pink-700 text-xs font-bold rounded-full mb-4 animate-slide-in border border-pink-200/50">
-                    <i class="fa-solid fa-star-burst animate-spin" style="animation-duration: 3s"></i> Koleksi Eksklusif 2026
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur text-white text-xs font-bold rounded-full mb-4 border border-white/30" style="animation: fade-in 0.6s ease-out">
+                    <i class="fa-solid fa-star" style="animation: spin 3s linear infinite"></i> Koleksi Eksklusif 2026
                 </span>
-                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 leading-tight tracking-tight animate-fade-in mb-4">
-                    Fashion <span class="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 bg-clip-text text-transparent animate-glow">Megah</span> <br>
-                    Untuk Gaya <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-pink-500">Terbaik Kamu</span>
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tight mb-4" style="animation: fade-in 0.6s ease-out 0.2s both">
+                    Fashion <span class="bg-gradient-to-r from-pink-200 via-rose-200 to-white bg-clip-text text-transparent" style="animation: glow 2s ease-in-out infinite">Anggun</span> <br>
+                    Untuk <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-200 to-pink-200">Gaya Terbaikmu</span>
                 </h1>
-                <p class="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl animate-slide-up" style="animation-delay: 0.2s">
-                    Koleksi fashion premium dari brand terkenal. Kualitas mewah dengan harga yang terjangkau. Gaya yang menginspirasi!
+                <p class="mt-6 text-lg sm:text-xl text-white/90 leading-relaxed max-w-2xl" style="animation: fade-in 0.6s ease-out 0.4s both">
+                    Temukan koleksi fashion premium yang dirancang untuk perempuan modern. 
+                    Dari daily look hingga statement piece — semuanya ada di sini.
                 </p>
-                <div class="mt-10 flex flex-wrap gap-4 animate-slide-up" style="animation-delay: 0.4s">
-                    <a href="#katalog" class="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-pink-400/60 hover:shadow-2xl hover:shadow-pink-500/70 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
+                <div class="mt-10 flex flex-wrap gap-4" style="animation: fade-in 0.6s ease-out 0.6s both">
+                    <a href="#katalog" class="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-pink-500/50 hover:shadow-2xl hover:shadow-pink-500/70 hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden">
                         <span class="relative z-10 flex items-center gap-2">Jelajahi Koleksi <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i></span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-rose-600 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </a>
-                    <button onclick="resetFilter()" class="inline-flex items-center gap-2 px-8 py-4 bg-white/80 backdrop-blur text-gray-700 font-semibold rounded-2xl border-2 border-pink-200 hover:border-pink-400 hover:bg-white hover:shadow-lg transition-all duration-300">
-                        <i class="fa-solid fa-rotate"></i> Reset Filter
-                    </button>
+                    <a href="#katalog" onclick="resetFilter()" class="inline-flex items-center gap-2 px-8 py-4 bg-white/20 backdrop-blur text-white font-semibold rounded-2xl border-2 border-white/40 hover:bg-white/30 hover:border-white/60 hover:shadow-lg transition-all duration-300">
+                        <i class="fa-solid fa-rotate"></i> Lihat Semua
+                    </a>
                 </div>
             </div>
         </div>
@@ -115,7 +139,7 @@
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
                     <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" id="search-input" placeholder="Cari baju..." oninput="debouncedFilter()" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-pink-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all placeholder:text-gray-400">
+                    <input type="text" id="search-input" placeholder="Cari baju impianmu..." oninput="debouncedFilter()" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-pink-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all placeholder:text-gray-400">
                 </div>
                 <div class="relative">
                     <i class="fa-solid fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -147,7 +171,7 @@
                 <p id="result-count" class="text-sm text-gray-400">Memuat...</p>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="openAddForm()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-pink-400 hover:-translate-y-0.5 transition-all sm:hidden">
+                <button data-admin onclick="openAddForm()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-pink-400 hover:-translate-y-0.5 transition-all sm:hidden">
                     <i class="fa-solid fa-plus text-xs"></i> Tambah
                 </button>
                 <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
@@ -161,33 +185,43 @@
             </div>
         </div>
 
-        <!-- Loading -->
         <div id="loading" class="flex items-center justify-center py-20">
             <div class="flex flex-col items-center gap-3">
                 <div class="w-10 h-10 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin"></div>
-                <p class="text-sm text-gray-400">Memuat data...</p>
+                <p class="text-sm text-gray-400">Memuat koleksi...</p>
             </div>
         </div>
 
-        <!-- Empty State -->
         <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20">
             <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                 <i class="fa-solid fa-shirt text-3xl text-gray-300"></i>
             </div>
-            <h3 class="text-lg font-semibold text-gray-600">Tidak ada item</h3>
-            <p class="text-sm text-gray-400 mt-1">Coba ubah filter pencarianmu</p>
+            <h3 class="text-lg font-semibold text-gray-600">Belum Ada Item</h3>
+            <p class="text-sm text-gray-400 mt-1">Coba ubah filter pencarianmu, ya!</p>
             <button onclick="resetFilter()" class="mt-4 px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-pink-400 transition-all">Reset Filter</button>
         </div>
 
-        <!-- Product Cards -->
-        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 hidden" style="--stagger: 0"></div>
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 hidden"></div>
     </section>
 
     <!-- Footer -->
     <footer class="border-t border-pink-200 bg-gradient-to-r from-white via-pink-50 to-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="text-center">
-                <p class="text-sm text-gray-500">© 2026 Fashion Store. Semua hak dilindungi.</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex justify-center mb-8">
+                <div class="text-center max-w-md">
+                    <div class="flex items-center justify-center gap-2.5 mb-4">
+                        <div class="w-9 h-9 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-pink-300">
+                            <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
+                        </div>
+                        <span class="text-lg font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Chipper</span>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed">Fashion premium untuk kamu yang percaya diri. 
+Temukan gaya terbaikmu di sini.</p>
+                </div>
+            </div>
+            <div class="text-center pt-8 border-t border-gray-200">
+                <p class="text-sm text-gray-500">&copy; 2026 Chipper Fashion Store. All rights reserved.</p>
+                <p class="text-xs text-gray-400 mt-2">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk Indonesia</p>
             </div>
         </div>
     </footer>
@@ -195,11 +229,100 @@
     <!-- Detail Modal -->
     <div id="modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-modal">
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-scale-in">
             <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors z-10">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div id="modal-content" class="p-6 sm:p-8"></div>
+            <div id="modal-content" class="p-5 sm:p-8 break-words"></div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-[65] flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeLoginForm()"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-8">
+            <button onclick="closeLoginForm()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div id="auth-login">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-pink-100 to-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-pink-300/30">
+                        <i class="fa-solid fa-user text-2xl text-pink-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-gray-900">Selamat Datang</h3>
+                    <p class="text-sm text-gray-400 mt-1">Masuk ke akun Chipper Fashion</p>
+                </div>
+                <form id="login-form" onsubmit="submitLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Username</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="username" required placeholder="Masukkan username" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="password" name="password" required placeholder="Masukkan password" id="login-password" class="w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all placeholder:text-gray-300">
+                            <button type="button" onclick="togglePassword('login-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-600 transition-colors">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="login-submit-btn" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-pink-400/50 hover:-translate-y-0.5 transition-all text-sm flex items-center justify-center gap-2">
+                        <span id="login-submit-text">Masuk</span>
+                        <span id="login-submit-loading" class="hidden"><i class="fa-solid fa-spinner animate-spin"></i> Memproses...</span>
+                    </button>
+                </form>
+                <p class="text-center text-sm text-gray-400 mt-6">
+                    Belum punya akun? <a href="#" onclick="event.preventDefault();toggleAuthMode()" class="text-pink-600 hover:text-pink-700 font-semibold">Daftar</a>
+                </p>
+            </div>
+
+            <div id="auth-register" class="hidden">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-sky-300/30">
+                        <i class="fa-solid fa-user-plus text-2xl text-sky-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-gray-900">Daftar Akun</h3>
+                    <p class="text-sm text-gray-400 mt-1">Gabung Chipper Fashion sekarang</p>
+                </div>
+                <form id="register-form" onsubmit="submitRegister(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Nama Lengkap</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="nama" required placeholder="Nama lengkap" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-400 transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Username</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-at absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="username" required placeholder="Pilih username" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-400 transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="password" name="password" required placeholder="Buat password" id="register-password" class="w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-400 transition-all placeholder:text-gray-300">
+                            <button type="button" onclick="togglePassword('register-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-sky-600 transition-colors">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="register-submit-btn" class="w-full py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-400/50 hover:-translate-y-0.5 transition-all text-sm flex items-center justify-center gap-2">
+                        <span id="register-submit-text">Daftar</span>
+                        <span id="register-submit-loading" class="hidden"><i class="fa-solid fa-spinner animate-spin"></i> Mendaftarkan...</span>
+                    </button>
+                </form>
+                <p class="text-center text-sm text-gray-400 mt-6">
+                    Sudah punya akun? <a href="#" onclick="event.preventDefault();toggleAuthMode()" class="text-sky-600 hover:text-sky-700 font-semibold">Masuk</a>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -209,6 +332,7 @@
         <span id="toast-message">Berhasil ditambahkan ke keranjang!</span>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/static/app.js"></script>
 </body>
 </html>

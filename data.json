@@ -25,7 +25,7 @@
   },
   {
     "id": 4,
-    "nama": "Kemeja Batik",
+    "nama": "Batik",
     "merk": "Erigo",
     "ukuran": "L",
     "warna": "Hitam",
@@ -49,14 +49,26 @@
   },
   {
     "id": 7,
-    "nama": "Kaos Putih",
+    "nama": "Celana Jeans",
     "merk": "Levi's",
     "ukuran": "M",
     "warna": "Kuning",
     "harga": 400000.0,
     "stok": 1,
     "kategori": "Kaos",
-    "gambar_url": null,
+    "gambar_url": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=500&fit=crop",
     "deskripsi": "Kaus putih polos"
+  },
+  {
+    "id": 8,
+    "nama": "Kemeja Hitam",
+    "merk": "Levi's",
+    "ukuran": "M",
+    "warna": "hitam",
+    "harga": 300000.0,
+    "stok": 4,
+    "kategori": "Celana",
+    "gambar_url": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=500&fit=crop",
+    "deskripsi": "kemeja pendek"
   }
 ]
